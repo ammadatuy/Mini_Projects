@@ -64,7 +64,7 @@ in question. */
 
 SELECT name, monthlymaintenance,
 CASE WHEN monthlymaintenance <= 100 THEN 'cheap'
-	WHEN monthlymaintenance > 100 THEN 'expensive’
+WHEN monthlymaintenance > 100 THEN 'expensive'
 END AS pricelevel
 FROM Facilities
 
@@ -83,9 +83,9 @@ formatted as a single column. Ensure no duplicate data, and order by
 the member name. */
 
 SELECT DISTINCT(CONCAT(Members.firstname, ' ', Members.surname)) AS full_name, 
-  Facilities.name as court_name
+Facilities.name as court_name
 FROM Members JOIN Bookings ON Members.memid = Bookings.memid JOIN Facilities 
-  ON Bookings.facid = Facilities.facid 
+ON Bookings.facid = Facilities.facid 
 WHERE Facilities.facid = 0 OR Facilities.facid = 1
 ORDER BY full_name
 
@@ -97,22 +97,22 @@ the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
 
-SELECT concat(Members.firstname, ' ', Members.surname) 
-AS full_name, Bookings.memid, Facilities.name, Bookings.slots * Facilities.membercost 
-AS day_cost FROM Bookings
+SELECT concat(Members.firstname, ' ', Members.surname) AS full_name, 
+Bookings.memid, Facilities.name, Bookings.slots * Facilities.membercost AS day_cost 
+FROM Bookings
 JOIN Facilities ON Facilities.facid = Bookings.facid
 JOIN Members ON Members.memid = Bookings.memid
 WHERE LEFT(starttime, 10) = '2012-09-14'
 AND Bookings.memid > 0
 AND Bookings.slots * Facilities.membercost > 30
 UNION
-SELECT concat(Members.firstname, ' ', Members.surname) 
-AS full_name, Bookings.memid, Facilities.name, Bookings.slots * Facilities.guestcost 
-AS day_cost FROM Bookings
+SELECT concat(Members.firstname, ' ', Members.surname) AS full_name, 
+Bookings.memid, Facilities.name, Bookings.slots * Facilities.guestcost AS day_cost 
+FROM Bookings
 JOIN Facilities ON Facilities.facid = Bookings.facid
 JOIN Members ON Members.memid = Bookings.memid
 WHERE LEFT(starttime, 10) = '2012-09-14'
-AND Bookings.memid = 0
+AND Bookings.memid = 0 
 AND Bookings.slots * Facilities.guestcost > 30
 ORDER BY 4 DESC
 
@@ -120,22 +120,19 @@ ORDER BY 4 DESC
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
 
 SELECT sub.* FROM
-(SELECT concat(Members.firstname, ' ', Members.surname) 
-AS full_name, Bookings.memid,Facilities.name, Bookings.slots * Facilities.membercost 
-AS day_cost FROM Bookings
-JOIN Facilities ON Facilities.facid = Bookings.facid
-JOIN Members ON Members.memid = Bookings.memid
-WHERE LEFT(starttime, 10) = '2012-09-14'
-AND Bookings.memid > 0
-UNION
-SELECT concat(Members.firstname, ' ', Members.surname) 
-AS full_name, Bookings.memid, Facilities.name, Bookings.slots * Facilities.guestcost 
-AS day_cost 
+(SELECT concat(Members.firstname, ' ', Members.surname) AS full_name, 
+Bookings.memid,Facilities.name, Bookings.slots * Facilities.membercost AS day_cost 
 FROM Bookings
 JOIN Facilities ON Facilities.facid = Bookings.facid
 JOIN Members ON Members.memid = Bookings.memid
-WHERE LEFT(starttime, 10) = '2012-09-14'
-AND Bookings.memid = 0
+WHERE LEFT(starttime, 10) = '2012-09-14' AND Bookings.memid > 0
+UNION
+SELECT concat(Members.firstname, ' ', Members.surname) AS full_name, 
+Bookings.memid, Facilities.name, Bookings.slots * Facilities.guestcost AS day_cost 
+FROM Bookings
+JOIN Facilities ON Facilities.facid = Bookings.facid
+JOIN Members ON Members.memid = Bookings.memid
+WHERE LEFT(starttime, 10) = '2012-09-14' AND Bookings.memid = 0
 ORDER BY 4 DESC) sub
 WHERE sub.day_cost > 30
 
@@ -151,5 +148,5 @@ AS total_revenue
 FROM Bookings INNER JOIN Facilities ON Bookings.facid = Facilities.facid
 GROUP BY facilities_name
 HAVING total_revenue < 1000 
-ORDER  BY total_revenue
+ORDER BY total_revenue
 
